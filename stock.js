@@ -5,8 +5,8 @@ var stock = {
 
     getStockPrice: function (input) {
         let { value, rate, variance } = input;
+        if (value < 1) value = 1;
         return value * rate + variance * stock.randomAroundZero();
-
     }
 };
 

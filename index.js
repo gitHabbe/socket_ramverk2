@@ -4,23 +4,7 @@ const io = require('socket.io')(http);
 const stock = require("./stock.js");
 const axios = require('axios');
 
-
-// var princessTarta = {
-//     name: "Princesstårta",
-//     rate: 1.002,
-//     variance: 0.6,
-//     startingPoint: 20
-// };
-
-// var mandelKubb = {
-//     name: "Mandel kubb",
-//     rate: 1.001,
-//     variance: 0.4,
-//     startingPoint: 20
-// };
-
-// var cakes = [ princessTarta, mandelKubb ];
-const api_uri = process.env.API_URI || "http://localhost:8333";
+const api_uri = process.env.API_URI || "http://localhost:7333";
 let figures = [];
 (async () => {
     try {
@@ -40,17 +24,30 @@ io.on('connection', async socket => {
         console.log("code", code);
     });
 
+    socket.on("buy", async info => {
+        console.log("Got emit on socket 'buy'");
+		console.log("TCL: info", info);
+        let correctFigure = figures.find(figure => figure.name === info.figure.name);
+        socket.emit("buying", {correctFigure, user: info.user, count: info.count});
+    });
+
+    socket.on("sell", async info => {
+        console.log("Got emit on socket 'sell'");
+		console.log("TCL: info", info);
+        let correctFigure = figures.find(figure => figure.name === info.figure.name);
+        socket.emit("selling", {correctFigure, user: info.user, count: info.count});
+    });
+
     socket.on('disconnect', () => {
         console.log('user disconnected');
         io.emit("userleave", "someone left");
     });
 });
 
-setInterval(function () {
-    console.log('TCL: figures', figures);
-    figures.forEach(cake => {
-        cake["value"] = stock.getStockPrice(cake);
-        return cake;
+setInterval(() => {
+    figures.forEach(figure => {
+        figure["value"] = stock.getStockPrice(figure);
+        return figure;
     });
 
     io.emit("stocks", figures);
@@ -62,6 +59,6 @@ app.use((req, res) => {
     res.send({ msg: "hello" });
 });
 
-http.listen(3002, () => {
+http.listen(2002, () => {
     console.log('listening on *:3002');
 });
