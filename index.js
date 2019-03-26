@@ -10,7 +10,6 @@ let figures = [];
     try {
         const test = await axios.get(`${api_uri}/figure/figures`);
         figures = test.data;
-        console.log('TCL: figures.data', figures.data);
     } catch (error) {
         console.log('catch -> error', error);
     }
@@ -60,5 +59,5 @@ app.use((req, res) => {
 });
 
 http.listen(2002, () => {
-    console.log('listening on *:3002');
+    console.log('listening on *:2002');
 });
