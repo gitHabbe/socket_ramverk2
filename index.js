@@ -3,6 +3,8 @@ const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const stock = require("./stock.js");
 const axios = require('axios');
+const cors          = require('cors');
+app.use(cors());
 
 const api_uri = process.env.API_URI || "http://localhost:7333";
 let figures = [];
